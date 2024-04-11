@@ -7,6 +7,9 @@ public class Main {
     static char openBracket = '{';
     static char closeBracket = '}';
 
+    static String stringOpenBracket = String.valueOf(openBracket);
+    static String stringCloseBracket = String.valueOf(closeBracket);
+
     static String bracketsString;
     static String correctString;
     static int numberOfOpenBracket;
@@ -31,26 +34,36 @@ public class Main {
 
         System.out.println("Number of open brackets - " + numberOfOpenBracket + ".\nNumber of close brackets - " + numberOfCloseBracket + ".\nCorrect string is - " + correctString);
 
-        processBrackets(correctString, 1);
+        processInnerBrackets(correctString, 0, 1, true);
+
+        System.out.println("TEST " + positionOfPairedBrackets + " STRING " + bufferString);
+
+        bufferString = replacedIncorrectStartAndEndBrackets(bufferString);
+
+        System.out.println("AFTER ALL " + bufferString);
     }
 
-    private static String processBrackets(String string, int position) {
+    private static String processInnerBrackets(String string, int position, int lengthOfBufChar, boolean boolMarker) {
         if (position < string.length()) {
             if (string.charAt(position) == openBracket) {
-                processBrackets(string, position + 1);
-            }
-            else if (string.charAt(0) == closeBracket){
-                processBrackets(string.substring(1), 1);
+                processInnerBrackets(string, position + lengthOfBufChar, lengthOfBufChar, true);
+            } else if (string.charAt(position) == closeBracket && !boolMarker) {
+                processInnerBrackets(string, position + lengthOfBufChar, lengthOfBufChar, false);
             } else {
-                System.out.println("Pair bracket founded - positions are " + (position - 1) + " and " + position);
-                positionOfPairedBrackets.add(String.valueOf((position - 1) + String.valueOf(position)));
-                if (position > 1) {
-                    bufferString = string.substring(0, position - 1) + string.substring(position);
+                if (string.substring(position).lastIndexOf('a') + string.substring(position).indexOf("a") < -1) {
+                    lengthOfBufChar = 1;
                 } else {
-                    bufferString = string.substring(position);
+                    lengthOfBufChar = string.lastIndexOf('a') + string.indexOf("a") - 1;
                 }
+                System.out.println("Pair bracket founded - positions are " + (position - lengthOfBufChar) + " and " + position);
+                positionOfPairedBrackets.add(String.valueOf((position - lengthOfBufChar) + "_" + String.valueOf(position)));
+                bufferString = string.substring(0, position - lengthOfBufChar);
+                for (int i = 0; i <= lengthOfBufChar; i++) {
+                    bufferString += "a";
+                }
+                bufferString += string.substring(position + 1);
                 System.out.println("String is - " + bufferString);
-                processBrackets(string, position + 1);
+                processInnerBrackets(bufferString, position + 1, lengthOfBufChar, false);
             }
         }
         return string;
@@ -63,14 +76,26 @@ public class Main {
     private static String removedIncorrectStartAndEndBrackets(String string) {
         if (string != null) {
             if (string.startsWith("}")) {
-                string = string.substring(1);
-                removedIncorrectStartAndEndBrackets(string);
+                string = removedIncorrectStartAndEndBrackets(string.substring(1));
             }
             if (string.endsWith("{")) {
-                string = string.substring(0, string.length() - 1);
-                removedIncorrectStartAndEndBrackets(string);
+                string = removedIncorrectStartAndEndBrackets(string.substring(0, string.length() - 1));
             }
+            return string;
         }
+        return null;
+    }
+
+    private static String replacedIncorrectStartAndEndBrackets(String string) {
+        boolean isAllBracketsDone = false;
+        do {
+            if (string.indexOf(stringOpenBracket) > string.indexOf(stringCloseBracket)) {
+                string = string.substring(0, string.indexOf(stringCloseBracket)) + "a" + string.substring(string.indexOf(stringCloseBracket) + 1);
+            } else if (string.lastIndexOf(stringOpenBracket) > string.lastIndexOf(stringCloseBracket)) {
+                string = string.substring(0, string.lastIndexOf(stringOpenBracket)) + "a" + string.substring(string.lastIndexOf(stringOpenBracket) + 1);
+            } else isAllBracketsDone = true;
+        } while (!isAllBracketsDone);
+
         return string;
     }
 }
