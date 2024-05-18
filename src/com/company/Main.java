@@ -36,14 +36,10 @@ public class Main {
 
         processInnerBrackets(correctString, 0, 1, true);
 
-//        System.out.println("TEST " + positionOfPairedBrackets + "\nSTRING " + bufferString);
-
         bufferString = replacedIncorrectStartAndEndBrackets(bufferString);
 
         if (bufferString.contains(stringOpenBracket) || bufferString.contains(stringCloseBracket))
             processFinalString(bufferString, 0, 0);
-
-//        System.out.println("AFTER ALL " + bufferString + "\n" + positionOfPairedBrackets);
 
         StringBuilder correctBracketsString = new StringBuilder();
         correctBracketsString.setLength(positionOfPairedBrackets.size());
@@ -78,7 +74,6 @@ public class Main {
                     bufferString += "a";
                 }
                 bufferString += string.substring(position + 1);
-//                System.out.println("String is - " + bufferString);
                 processInnerBrackets(bufferString, position + 1, lengthOfBufChar, false);
             }
         }
@@ -141,7 +136,6 @@ public class Main {
                     bufferString += "a";
                 }
                 bufferString += string.substring(position + 1);
-//                System.out.println("String is - " + bufferString);
                 processFinalString(bufferString, 0, 0);
             }
         }
